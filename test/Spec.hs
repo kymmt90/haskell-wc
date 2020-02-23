@@ -1,2 +1,11 @@
+import Test.HUnit
+
 main :: IO ()
-main = putStrLn "Test suite not yet implemented"
+main = do
+  _ <- runTestTT $ TestList [sampleTest]
+  return ()
+
+sampleTest :: Test
+sampleTest = TestList
+  [ "Test 1" ~: (1 + 1 :: Int) ~?= 2
+  ]
