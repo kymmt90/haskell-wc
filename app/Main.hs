@@ -6,7 +6,10 @@ import Lib (countLines)
 execute :: String -> Maybe Int
 execute text = Just (countLines text)
 
+formatAsWc :: Int -> Maybe String
+formatAsWc count = Just ("\t" ++ show count)
+
 main :: IO ()
 main = do
-  text <- getContents
-  return (show . fromJust . execute $ text) >>= putStrLn
+  result <- getContents >>= return . formatAsWc . fromJust . execute
+  putStrLn $ fromJust result
