@@ -1,6 +1,6 @@
 module Lib
-    ( someFunc
+    ( countLines
     ) where
 
-someFunc :: IO ()
-someFunc = putStrLn "someFunc"
+countLines :: String -> Int
+countLines = length . lines
