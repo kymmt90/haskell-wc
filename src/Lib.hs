@@ -2,5 +2,7 @@ module Lib
     ( countLines
     ) where
 
+import qualified Data.Text as T
+
 countLines :: String -> Int
-countLines = length . lines
+countLines = length . T.lines . T.pack
