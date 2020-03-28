@@ -32,7 +32,9 @@ wcMain inputFileNames = do
     else do
       readFiles inputFileNames
 
-  putStrLn (unlines (map show (getWcResult inputFiles)))
+  let results = getWcResult inputFiles
+  putStr (unlines (map show results))
+  if length results > 1 then putStrLn (show (getTotal results)) else return ()
 
 readStdin :: IO [File]
 readStdin = sequenceA [fmap (File "") TIO.getContents]
@@ -61,3 +63,10 @@ countWords = length . T.words
 
 countBytes :: T.Text -> Int
 countBytes = BS.length . TE.encodeUtf8
+
+getTotal :: [Result] -> Result
+getTotal results =
+  foldl foldResults totalResult results
+  where
+    totalResult = Result 0 0 0 "total"
+    foldResults (Result l w b total) (Result l' w' b' _) = Result (l + l') (w + w') (b + b') total
