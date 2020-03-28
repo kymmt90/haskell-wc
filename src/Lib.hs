@@ -18,7 +18,7 @@ data Result = Result {
   , numberOfWords :: Int
   , numberOfBytes :: Int
   , resultFileName :: String
-  }
+  } deriving (Eq)
 
 instance Show Result where
   show r = printf "%7d%8d%8d %s" (numberOfLines r) (numberOfWords r) (numberOfBytes r) (resultFileName r)
