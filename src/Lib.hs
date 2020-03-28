@@ -33,27 +33,28 @@ wcMain inputFileNames = do
       readFiles inputFileNames
 
   let results = getWcResult inputFiles
-  putStr (unlines (map show results))
-  if length results > 1 then putStrLn (show (getTotal results)) else return ()
+  putStr $ unlines $ map show results
+  if length results > 1 then putStrLn $ show $ getTotal results else return ()
 
 readStdin :: IO [File]
-readStdin = sequenceA [fmap (File "") TIO.getContents]
+readStdin = sequenceA [(File "") <$> TIO.getContents]
 
 readFiles :: [String] -> IO [File]
 readFiles fileNames = do
   contents <- sequenceA (map TIO.readFile fileNames)
-  let namesAndContents = zip fileNames contents
-  return $ map toFile namesAndContents
+  return $ map toFile (zip fileNames contents)
     where
       toFile (name, contents) = File name contents
 
 getWcResult :: [File] -> [Result]
-getWcResult files = map (\f -> Result {
-  numberOfLines = countLines (fileContents f)
-  , numberOfWords = countWords (fileContents f)
-  , numberOfBytes = countBytes (fileContents f)
-  , resultFileName = fileName f
-  }) files
+getWcResult files = map toResult files
+  where
+    toResult f = Result {
+      numberOfLines = countLines (fileContents f)
+      , numberOfWords = countWords (fileContents f)
+      , numberOfBytes = countBytes (fileContents f)
+      , resultFileName = fileName f
+      }
 
 countLines :: T.Text -> Int
 countLines = length . T.lines
