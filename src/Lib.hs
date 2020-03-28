@@ -18,6 +18,13 @@ instance Show Result where
 readStdin :: IO T.Text
 readStdin = TIO.getContents
 
+getWcResult :: T.Text -> Result
+getWcResult contents = Result {
+  numberOfLines = countLines contents
+  , numberOfWords = countWords contents
+  , numberOfBytes = countBytes contents
+  }
+
 countLines :: T.Text -> Int
 countLines = length . T.lines
 
