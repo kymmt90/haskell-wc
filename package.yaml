@@ -48,4 +48,4 @@ tests:
     - -with-rtsopts=-N
     dependencies:
     - wc
-    - HUnit
+    - hspec
