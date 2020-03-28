@@ -1,34 +1,42 @@
+{-# LANGUAGE OverloadedStrings #-}
+
 module Main where
 
-import Control.Monad (forM_)
-import Data.Maybe (fromJust)
-import Lib (countLines)
 import System.Environment (getArgs)
+import Text.Printf (printf)
+import qualified Data.Text as T
+import qualified Data.Text.Encoding as TE
+import qualified Data.Text.IO as TIO
+import qualified Data.ByteString as BS
 
-count :: String -> Maybe Int
-count text = Just (countLines text)
+data Result = Result {
+  numberOfLines :: Int
+  , numberOfWords :: Int
+  , numberOfBytes :: Int
+  }
 
-formatAsWc :: Int -> Maybe String
-formatAsWc result = Just ("\t" ++ show result)
+instance Show Result where
+  show r = printf "%7d%8d%8d" (numberOfLines r) (numberOfWords r) (numberOfBytes r)
+
+readStdin :: IO T.Text
+readStdin = TIO.getContents
+
+countLines :: T.Text -> Int
+countLines = length . T.lines
+
+countWords :: T.Text -> Int
+countWords = length . T.words
+
+countBytes :: T.Text -> Int
+countBytes = BS.length . TE.encodeUtf8
 
 main :: IO ()
 main = do
-  files <- getArgs
-
-  case files of
-    [] -> do
-      readFromStdin
-    _ -> do
-      readFromFiles files
-
-  where
-    readFromFiles :: [String] -> IO ()
-    readFromFiles files =
-      forM_ files $ \f -> do
-        result <- readFile f >>= return . formatAsWc . fromJust . count
-        putStrLn $ fromJust result ++ " " ++ f
-
-    readFromStdin :: IO ()
-    readFromStdin = do
-      result <- getContents >>= return . formatAsWc . fromJust . count
-      putStrLn $ fromJust result
+  inputFileNames <- getArgs
+  inputContents <- if inputFileNames == [] || inputFileNames == ["-"] then readStdin else return ""
+  let result = Result {
+    numberOfLines = countLines inputContents
+    , numberOfWords = countWords inputContents
+    , numberOfBytes = countBytes inputContents
+    }
+  putStrLn $ show result
