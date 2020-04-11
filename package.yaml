@@ -49,3 +49,4 @@ tests:
     dependencies:
     - wc
     - hspec
+    - QuickCheck
