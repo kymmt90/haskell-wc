@@ -1,5 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
+import Control.Monad
 import Data.List.Split
 import qualified Data.Text as T
 import Test.Hspec
@@ -17,20 +18,23 @@ prop_countLines xs =
       then init splittedByNewline
       else splittedByNewline
 
+prop_countWords :: String -> Bool
+prop_countWords xs =
+  countWords (T.pack xs) == length ([x | x <- join $ words <$> linesOmittedTrailingNewline, not (null x)])
+  where
+    splittedByNewline = splitOn "\n" xs
+    linesOmittedTrailingNewline =
+      if null . last $ splittedByNewline
+      then init splittedByNewline
+      else splittedByNewline
+
 main :: IO ()
 main = hspec $ do
   describe "countLines property" $ do
     prop "countLines property" prop_countLines
 
-  describe "countWords" $ do
-    it "counts words in a string" $ do
-      countWords "ab cd\tef\ngh\rjk\flm\v\n" `shouldBe` 6
-
-    it "does not count an empty line" $ do
-      countWords "\n" `shouldBe` 0
-
-    it "does not count an empty string" $ do
-      countWords "" `shouldBe` 0
+  describe "countWords property" $ do
+    prop "countWords property" prop_countWords
 
   describe "countBytes" $ do
     it "counts bytes in a string" $ do
